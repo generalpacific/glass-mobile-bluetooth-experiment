@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    tools:ignore="TextFields,HardcodedText" >
+
+     <TextView
+        android:id="@+id/label0"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:text="Select server/client" />
+     
+     <Spinner
+    	android:id="@+id/client_server_spinner"
+    	android:layout_width="fill_parent"
+   		android:layout_height="wrap_content" 
+   		android:layout_below="@id/label0"/>
+    
+    <TextView
+        android:id="@+id/label1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/client_server_spinner"
+        android:text="Select the remote device name: " />
+    
+   	<Spinner
+    	android:id="@+id/paired_devices_spinner"
+    	android:layout_width="fill_parent"
+   		android:layout_height="wrap_content" 
+   		android:layout_below="@id/label1"/>
+    
+    <TextView
+        android:id="@+id/label2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/paired_devices_spinner"
+        android:text="Type here:" />
+
+    <EditText
+        android:id="@+id/entry2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/label2"
+        android:background="@android:drawable/editbox_background" />
+
+    <Button
+        android:id="@+id/open"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/entry2"
+        android:layout_marginLeft="10dip"
+        android:text="Open" />
+
+    <Button
+        android:id="@+id/send"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/open"
+        android:layout_toLeftOf="@id/open"
+        android:text="Send" />
+
+    <Button
+        android:id="@+id/close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/send"
+        android:layout_toLeftOf="@id/send"
+        android:text="Close" />
+
+    <ScrollView
+    android:id="@+id/scroller"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:scrollbars="vertical"
+    android:fillViewport="true"
+    android:layout_alignParentLeft="true"
+	android:layout_below="@+id/close">
+	
+        <TextView
+	        android:id="@+id/datalabel"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="" />
+    </ScrollView>
+
+</RelativeLayout>
