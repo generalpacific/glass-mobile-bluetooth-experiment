@@ -5,20 +5,28 @@ import java.io.IOException;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.bluetoothexperiment.bluetooth.BluetoothManager;
+import com.example.bluetoothexperiment.handler.AdditionRequestHandler;
+import com.example.bluetoothexperiment.handler.MatrixMultiplicationHandler;
+import com.example.bluetoothexperiment.requestresponse.RequestManager;
+import com.example.bluetoothexperiment.requestresponse.Requests;
 
 @SuppressLint("ShowToast")
 public class MainActivity extends Activity {
 	private final MainActivity mainActivity = this;
 	private boolean isServer = false;
+	public Requests requestType = Requests.ADDITION;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -31,6 +39,7 @@ public class MainActivity extends Activity {
 		
 		hideAll();
 		
+		/* Populate the client/server spinner */
 		String[] clientServerArray = {"", "Client", "Server"};
 		final Spinner clientServerSpinner = (Spinner)findViewById(R.id.client_server_spinner);
 		ArrayAdapter<String> clientServerArrayAdaptor = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, 
@@ -60,6 +69,32 @@ public class MainActivity extends Activity {
 			}
 
 		});
+		
+		/* Populate request type */
+		final Spinner requestTypeSpinner = (Spinner)findViewById(R.id.request_type_spinner);
+		ArrayAdapter<String> requestArrayAdaptor = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, 
+				Requests.requestValues());
+		requestArrayAdaptor.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		requestTypeSpinner.setAdapter(requestArrayAdaptor);
+		requestTypeSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> arg0, View arg1,
+					int arg2, long arg3) {
+				String string = requestTypeSpinner.getSelectedItem().toString();
+				if(string == null || string.isEmpty()) {
+					return;
+				}
+				requestType = Requests.getValue(string);
+				makeVisible(isServer);
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+				// DO NOTHING
+			}
+
+		});
+
 		
 		Spinner spinner = (Spinner)findViewById(R.id.paired_devices_spinner);
 		ArrayAdapter<String> devicesArrayAdaptor = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, 
@@ -115,7 +150,22 @@ public class MainActivity extends Activity {
 			public void onClick(View v) {
 				try {
 					if(BluetoothManager.getInstance(mainActivity).isInitialized()) {
-						BluetoothManager.getInstance(mainActivity).sendData();
+						int requestId = RequestManager.getInstance().addRequest();
+						String string = ((EditText)findViewById(R.id.entry2)).getText().toString();
+						String msg = null;
+						switch(requestType) {
+						case MATRIX_MULTIPLICATION:
+							msg = MatrixMultiplicationHandler.createRequest(requestId, Integer.parseInt(string));
+							break;
+						case ADDITION:
+							msg = AdditionRequestHandler.createRequest(requestId, string);
+							break;
+						default:
+							break;
+						}
+						Log.e("SEND DATA", "sending :" + msg);
+						BluetoothManager.getInstance(mainActivity).sendData(msg);
+						((TextView)findViewById(R.id.label2)).setText("Data Sent");
 					}else {
 						Toast.makeText(getApplicationContext(), "Bluetooth Manager not initialized.", Toast.LENGTH_SHORT).show();
 					}
@@ -153,6 +203,8 @@ public class MainActivity extends Activity {
 			findViewById(R.id.open).setVisibility(View.VISIBLE);
 			findViewById(R.id.paired_devices_spinner).setVisibility(View.VISIBLE);
 			findViewById(R.id.send).setVisibility(View.VISIBLE);
+			findViewById(R.id.label1_1).setVisibility(View.VISIBLE);
+			findViewById(R.id.request_type_spinner).setVisibility(View.VISIBLE);
 		}
 		
 	}
@@ -164,6 +216,8 @@ public class MainActivity extends Activity {
 		findViewById(R.id.label2).setVisibility(View.INVISIBLE);
 		findViewById(R.id.open).setVisibility(View.INVISIBLE);
 		findViewById(R.id.paired_devices_spinner).setVisibility(View.INVISIBLE);
+		findViewById(R.id.label1_1).setVisibility(View.INVISIBLE);
+		findViewById(R.id.request_type_spinner).setVisibility(View.INVISIBLE);
 		findViewById(R.id.send).setVisibility(View.INVISIBLE);
 	}
 

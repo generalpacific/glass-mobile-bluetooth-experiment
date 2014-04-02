@@ -31,12 +31,25 @@
     	android:layout_width="fill_parent"
    		android:layout_height="wrap_content" 
    		android:layout_below="@id/label1"/>
+   	
+   	<TextView
+        android:id="@+id/label1.1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/paired_devices_spinner"
+        android:text="Select request type:" />
+   	
+   	<Spinner
+    	android:id="@+id/request_type_spinner"
+    	android:layout_width="fill_parent"
+   		android:layout_height="wrap_content" 
+   		android:layout_below="@id/label1.1"/>
     
     <TextView
         android:id="@+id/label2"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/paired_devices_spinner"
+        android:layout_below="@id/request_type_spinner"
         android:text="Type here:" />
 
     <EditText

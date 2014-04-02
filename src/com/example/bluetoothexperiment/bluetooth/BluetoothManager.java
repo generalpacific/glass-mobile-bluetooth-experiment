@@ -22,8 +22,10 @@ import android.widget.TextView;
 
 import com.example.bluetoothexperiment.MainActivity;
 import com.example.bluetoothexperiment.R;
+import com.example.bluetoothexperiment.exception.IllegalRequestException;
 import com.example.bluetoothexperiment.exception.UnparsebleException;
-import com.example.bluetoothexperiment.handler.AdditionRequestHandler;
+import com.example.bluetoothexperiment.requestresponse.RequestFactory;
+import com.example.bluetoothexperiment.requestresponse.RequestManager;
 
 public final class BluetoothManager {
 	private final String CLASS_NAME = BluetoothManager.class.getSimpleName();
@@ -203,7 +205,7 @@ public final class BluetoothManager {
 
 		stopWorker = false;
 		readBufferPosition = 0;
-		readBuffer = new byte[1024];
+		readBuffer = new byte[100000];
 		workerThread = new Thread(new Runnable() {
 			public void run() {
 				while (!Thread.currentThread().isInterrupted() && !stopWorker) {
@@ -230,14 +232,20 @@ public final class BluetoothManager {
 										prependToDataLabel("Got request: " + data);
 										String response;
 										try {
-											response = (new AdditionRequestHandler()).process(data);
+											response = (RequestFactory.getInstance().getRequestHandler(data)).process(data);
 										} catch (UnparsebleException e) {
+											response = "ERROR: " + data + " is not a valid request. Exception: " + e.getMessage();
+										}catch (IllegalRequestException e) {
 											response = "ERROR: " + data + " is not a valid request. Exception: " + e.getMessage();
 										}
 										prependToDataLabel("Sending reponse: " + response);
 										sendData(response + "\n");
 									}else {
 										prependToDataLabel("Got response: " + data);
+										String[] split = data.split("#");
+										prependToDataLabel("Time taken for request id " + 
+												split[0] + " = " + 
+												RequestManager.getInstance().removeRequest(Integer.parseInt(split[0])) + "ms");
 									}
 								} else {
 									readBuffer[readBufferPosition++] = b;
@@ -266,7 +274,11 @@ public final class BluetoothManager {
 		myLabel.setText("Data Sent");
 	}
 	
-	private synchronized void sendData(String message) throws IOException {
+	public synchronized void sendData(String message) throws IOException {
+		if(!isInitialized) {
+			Log.e("SEND DATA", "NOT INITIALIZED");
+			return;
+		}
 		mmOutputStream.write(message.getBytes());
 	}
 
@@ -274,6 +286,9 @@ public final class BluetoothManager {
 		if(!isInitialized) {
 			return;
 		}
+		isInitialized = false;
+		isServerInitialized = false;
+		isClientInititialized = false;
 		stopWorker = true;
 		if(mmOutputStream != null) {
 			mmOutputStream.close();
@@ -283,6 +298,9 @@ public final class BluetoothManager {
 		}
 		if(mmSocket != null) {
 			mmSocket.close();
+		}
+		if(mmClientSocket != null) {
+			mmClientSocket.close();
 		}
 		myLabel.setText("Bluetooth Closed");
 	}
