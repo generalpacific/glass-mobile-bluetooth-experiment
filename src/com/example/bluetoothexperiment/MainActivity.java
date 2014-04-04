@@ -32,12 +32,11 @@ public class MainActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		hideAll();
 
 		Button openButton = (Button) findViewById(R.id.open);
 		Button sendButton = (Button) findViewById(R.id.send);
 		Button closeButton = (Button) findViewById(R.id.close);
-		
-		hideAll();
 		
 		/* Populate the client/server spinner */
 		String[] clientServerArray = {"", "Client", "Server"};
@@ -85,7 +84,6 @@ public class MainActivity extends Activity {
 					return;
 				}
 				requestType = Requests.getValue(string);
-				makeVisible(isServer);
 			}
 
 			@Override
@@ -150,15 +148,17 @@ public class MainActivity extends Activity {
 			public void onClick(View v) {
 				try {
 					if(BluetoothManager.getInstance(mainActivity).isInitialized()) {
-						int requestId = RequestManager.getInstance().addRequest();
+						int requestId = RequestManager.getInstance().getNextRequestId();
 						String string = ((EditText)findViewById(R.id.entry2)).getText().toString();
 						String msg = null;
 						switch(requestType) {
 						case MATRIX_MULTIPLICATION:
 							msg = MatrixMultiplicationHandler.createRequest(requestId, Integer.parseInt(string));
+							RequestManager.getInstance().addRequestForRequestId(requestId, msg);
 							break;
 						case ADDITION:
 							msg = AdditionRequestHandler.createRequest(requestId, string);
+							RequestManager.getInstance().addRequestForRequestId(requestId, msg);
 							break;
 						default:
 							break;
@@ -190,16 +190,18 @@ public class MainActivity extends Activity {
 	}
 	
 	protected void makeVisible(boolean isServer) {
+		TextView statusLabel = (TextView)findViewById(R.id.label2);
 		if(isServer) {
 			findViewById(R.id.label1).setVisibility(View.VISIBLE);
-			findViewById(R.id.label2).setVisibility(View.VISIBLE);
 			findViewById(R.id.paired_devices_spinner).setVisibility(View.VISIBLE);
 			findViewById(R.id.open).setVisibility(View.VISIBLE);
+			statusLabel.setText("Status");
+			statusLabel.setVisibility(View.VISIBLE);
 		}else {
 			findViewById(R.id.close).setVisibility(View.VISIBLE);
 			findViewById(R.id.entry2).setVisibility(View.VISIBLE);
 			findViewById(R.id.label1).setVisibility(View.VISIBLE);
-			findViewById(R.id.label2).setVisibility(View.VISIBLE);
+			statusLabel.setVisibility(View.VISIBLE);
 			findViewById(R.id.open).setVisibility(View.VISIBLE);
 			findViewById(R.id.paired_devices_spinner).setVisibility(View.VISIBLE);
 			findViewById(R.id.send).setVisibility(View.VISIBLE);
@@ -210,14 +212,14 @@ public class MainActivity extends Activity {
 	}
 
 	private void hideAll() {
-		findViewById(R.id.close).setVisibility(View.INVISIBLE);
-		findViewById(R.id.entry2).setVisibility(View.INVISIBLE);
 		findViewById(R.id.label1).setVisibility(View.INVISIBLE);
-		findViewById(R.id.label2).setVisibility(View.INVISIBLE);
-		findViewById(R.id.open).setVisibility(View.INVISIBLE);
 		findViewById(R.id.paired_devices_spinner).setVisibility(View.INVISIBLE);
 		findViewById(R.id.label1_1).setVisibility(View.INVISIBLE);
 		findViewById(R.id.request_type_spinner).setVisibility(View.INVISIBLE);
+		findViewById(R.id.label2).setVisibility(View.INVISIBLE);
+		findViewById(R.id.entry2).setVisibility(View.INVISIBLE);
+		findViewById(R.id.close).setVisibility(View.INVISIBLE);
+		findViewById(R.id.open).setVisibility(View.INVISIBLE);
 		findViewById(R.id.send).setVisibility(View.INVISIBLE);
 	}
 

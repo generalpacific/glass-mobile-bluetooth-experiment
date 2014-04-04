@@ -10,5 +10,5 @@ public final class RequestSeparators {
 		throw new IllegalStateException("Cannot instantiate the constants class");
 	}
 	
-	public final static String HEADER_SEPARATOR = "$";
+	public final static String HEADER_SEPARATOR = "#";
 }

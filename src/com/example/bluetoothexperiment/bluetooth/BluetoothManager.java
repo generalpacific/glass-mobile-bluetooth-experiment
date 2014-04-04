@@ -22,10 +22,8 @@ import android.widget.TextView;
 
 import com.example.bluetoothexperiment.MainActivity;
 import com.example.bluetoothexperiment.R;
-import com.example.bluetoothexperiment.exception.IllegalRequestException;
-import com.example.bluetoothexperiment.exception.UnparsebleException;
-import com.example.bluetoothexperiment.requestresponse.RequestFactory;
 import com.example.bluetoothexperiment.requestresponse.RequestManager;
+import com.example.bluetoothexperiment.requestresponse.request.LocalExecutor;
 
 public final class BluetoothManager {
 	private final String CLASS_NAME = BluetoothManager.class.getSimpleName();
@@ -54,6 +52,7 @@ public final class BluetoothManager {
 	private boolean isClientInititialized;
 	private boolean useFallBack = false;
 	private String deviceName;
+	private static boolean isBusy = false;
 
 	private BluetoothManager(MainActivity mainActivity) {
 		if (instance != null) {
@@ -230,22 +229,28 @@ public final class BluetoothManager {
 									Log.e("GOTDATA",data);
 									if(mainActivity.isServer()) {
 										prependToDataLabel("Got request: " + data);
-										String response;
-										try {
-											response = (RequestFactory.getInstance().getRequestHandler(data)).process(data);
-										} catch (UnparsebleException e) {
-											response = "ERROR: " + data + " is not a valid request. Exception: " + e.getMessage();
-										}catch (IllegalRequestException e) {
-											response = "ERROR: " + data + " is not a valid request. Exception: " + e.getMessage();
-										}
+										String response = LocalExecutor.execute(data);
 										prependToDataLabel("Sending reponse: " + response);
 										sendData(response + "\n");
 									}else {
-										prependToDataLabel("Got response: " + data);
+										//prependToDataLabel("Got response: " + data);
 										String[] split = data.split("#");
-										prependToDataLabel("Time taken for request id " + 
-												split[0] + " = " + 
-												RequestManager.getInstance().removeRequest(Integer.parseInt(split[0])) + "ms");
+										int requestId = Integer.parseInt(split[0]);
+										String requestStr = new String(RequestManager.getInstance().getRequest(requestId));
+										prependToDataLabel("Time taken(Network) for request id " + 
+												requestId + " = " + 
+												RequestManager.getInstance().removeRequest(requestId) + "ms");
+										try {
+											Thread.sleep(250);
+										} catch (InterruptedException e) {
+											// TODO Auto-generated catch block
+											e.printStackTrace();
+										}
+										long start = System.currentTimeMillis();
+										LocalExecutor.execute(requestStr);
+										prependToDataLabel("Time taken(Local) for request id " + 
+												requestId + " = " + 
+												(System.currentTimeMillis() - start) + "ms");
 									}
 								} else {
 									readBuffer[readBufferPosition++] = b;
@@ -310,6 +315,8 @@ public final class BluetoothManager {
 	}
 	
 	private synchronized void prependToDataLabel(String message) {
+		while(isBusy);
+		isBusy = true;
 		String currentMessage = myDataLabel.getText().toString();
 		currentMessage = message + "\n" + currentMessage;
 		final String displayMessage = currentMessage;
@@ -320,6 +327,7 @@ public final class BluetoothManager {
 				
 			}
 		});
+		isBusy = false;
 	}
 	
 	private synchronized void changeUILabel(final TextView view, final String message) {

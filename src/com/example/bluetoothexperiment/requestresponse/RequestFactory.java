@@ -31,7 +31,7 @@ public final class RequestFactory {
 	}
 	
 	public Handler getRequestHandlerBasedOnHeader(String header) throws IllegalRequestException {
-		switch(Requests.valueOf(header)){
+		switch(Requests.getValue(header)){
 		case ADDITION:
 			return new AdditionRequestHandler();
 		case MATRIX_MULTIPLICATION:
