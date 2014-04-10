@@ -4,6 +4,7 @@ import com.example.bluetoothexperiment.exception.IllegalRequestException;
 import com.example.bluetoothexperiment.handler.AdditionRequestHandler;
 import com.example.bluetoothexperiment.handler.Handler;
 import com.example.bluetoothexperiment.handler.MatrixMultiplicationHandler;
+import com.example.bluetoothexperiment.handler.NQueensRequestHandler;
 
 /**
  * Request factory to return the request handler object depending upon the type of data.
@@ -36,6 +37,8 @@ public final class RequestFactory {
 			return new AdditionRequestHandler();
 		case MATRIX_MULTIPLICATION:
 			return new MatrixMultiplicationHandler();
+		case NQUEENS:
+			return new NQueensRequestHandler();
 		default:
 			throw new IllegalRequestException("Illegal request header:" + header);
 		}

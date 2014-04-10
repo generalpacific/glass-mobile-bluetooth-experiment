@@ -2,6 +2,7 @@ package com.example.bluetoothexperiment.requestresponse;
 
 import com.example.bluetoothexperiment.handler.AdditionRequestHandler;
 import com.example.bluetoothexperiment.handler.MatrixMultiplicationHandler;
+import com.example.bluetoothexperiment.handler.NQueensRequestHandler;
 
 
 
@@ -12,7 +13,8 @@ import com.example.bluetoothexperiment.handler.MatrixMultiplicationHandler;
  */
 public enum Requests {
 	ADDITION(AdditionRequestHandler.getHeader()),
-	MATRIX_MULTIPLICATION(MatrixMultiplicationHandler.getHeader());
+	MATRIX_MULTIPLICATION(MatrixMultiplicationHandler.getHeader()),
+	NQUEENS(NQueensRequestHandler.getHeader());
 	
 	
 	private String value;
@@ -32,7 +34,7 @@ public enum Requests {
 	}
 	
 	public static String[] requestValues() {
-		return new String[] {ADDITION.value, MATRIX_MULTIPLICATION.value}; 
+		return new String[] {ADDITION.value, MATRIX_MULTIPLICATION.value, NQUEENS.value}; 
 	}
 	
 	@Override

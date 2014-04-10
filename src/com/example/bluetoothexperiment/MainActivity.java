@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.example.bluetoothexperiment.bluetooth.BluetoothManager;
 import com.example.bluetoothexperiment.handler.AdditionRequestHandler;
 import com.example.bluetoothexperiment.handler.MatrixMultiplicationHandler;
+import com.example.bluetoothexperiment.handler.NQueensRequestHandler;
 import com.example.bluetoothexperiment.requestresponse.RequestManager;
 import com.example.bluetoothexperiment.requestresponse.Requests;
 
@@ -158,6 +159,10 @@ public class MainActivity extends Activity {
 							break;
 						case ADDITION:
 							msg = AdditionRequestHandler.createRequest(requestId, string);
+							RequestManager.getInstance().addRequestForRequestId(requestId, msg);
+							break;
+						case NQUEENS:
+							msg = NQueensRequestHandler.createRequest(requestId, string);
 							RequestManager.getInstance().addRequestForRequestId(requestId, msg);
 							break;
 						default:
