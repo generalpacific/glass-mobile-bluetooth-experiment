@@ -246,11 +246,26 @@ public final class BluetoothManager {
 											// TODO Auto-generated catch block
 											e.printStackTrace();
 										}
+										prependToDataLabel("Executing: "  + requestStr + " locally.");
+										try {
+											Thread.sleep(250);
+										} catch (InterruptedException e) {
+											// TODO Auto-generated catch block
+											e.printStackTrace();
+										}
 										long start = System.currentTimeMillis();
-										LocalExecutor.execute(requestStr);
+										String execute = LocalExecutor.execute(requestStr);
+										prependToDataLabel("Local response "  + execute);
+										long executionTime = System.currentTimeMillis() - start;
+										try {
+											Thread.sleep(250);
+										} catch (InterruptedException e) {
+											// TODO Auto-generated catch block
+											e.printStackTrace();
+										}
 										prependToDataLabel("Time taken(Local) for request id " + 
 												requestId + " = " + 
-												(System.currentTimeMillis() - start) + "ms");
+												executionTime + "ms");
 									}
 								} else {
 									readBuffer[readBufferPosition++] = b;

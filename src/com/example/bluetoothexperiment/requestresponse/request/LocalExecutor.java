@@ -18,6 +18,7 @@ public final class LocalExecutor {
 	}
 	
 	public static String execute(String request) {
+		request = request.trim();
 		String response;
 		try {
 			Handler requestHandler = RequestFactory.getInstance().getRequestHandler(request);
